@@ -1,0 +1,12 @@
+-- $Id: $
+-- File name:   encoder.vhd
+-- Created:     10/26/2012
+-- Author:      Xie Hang
+-- Lab Section: 07
+-- Version:     1.0  Initial Design Entry
+-- Description: hdmi decoder
+
+
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+
