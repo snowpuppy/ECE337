@@ -61,6 +61,9 @@ def draw_line(x1,y1,x2,y2,arr=screen):
     if ( x2 > x1 ):
         dx = x2 - x1
         dy = y2 - y1
+    elif (x1 == x2 and y1 > y2):
+        dx = x2 - x1
+        dy = y2 - y1
     else:
         dx = x1 - x2
         dy = y1 - y2
@@ -134,5 +137,18 @@ def draw_line(x1,y1,x2,y2,arr=screen):
                     eps += dy
 
 def print_screen():
+    # get width
+    i = range(0,len(screen[0]))
+    r = []
+    for j in i:
+        r.append(j%10)
+    r = map(str,r)
+    print ' ',''.join(r)
+    # get height
+    i = range(0,len(screen))
+    r = []
+    for j in i:
+        r.append(j%10)
+    r = map(str,r)
     for i in range(0,len(screen)):
-        print screen[i]
+        print r[i], ''.join(screen[i])
