@@ -99,7 +99,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
         if smallslope:
             # draw each pixel for positive slopes from 0 to 1
             for x in range(x,xf+1):
-                arr[y][x] = '#'
+                if (x >= 0 and y >= 0):
+                    arr[y][x] = '|'
                 eps += dy
                 if (eps << 1) >= dx:
                     y += 1
@@ -107,7 +108,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
         else:
             # draw each pixel for positive slopes from 1 to inf
             for y in range(y,yf+1):
-                arr[y][x] = '#'
+                if (x >= 0 and y >= 0):
+                    arr[y][x] = '|'
                 eps += dx
                 if (eps << 1) >= dy:
                     x += 1
@@ -119,7 +121,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
     # draw each pixel for negative slopes from 0 to 1
         if smallslope:
             for x in range(x,xf+1):
-                arr[y][x] = '#'
+                if (x >= 0 and y >= 0):
+                    arr[y][x] = '|'
                 eps += dy
                 if (eps << 1) <= -dx:
                     y -= 1
@@ -130,7 +133,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
             dy = -dy
             # draw each pixel for positive slopes from 1 to inf
             for y in range(y,yf+1):
-                arr[y][x] = '#'
+                if (x >= 0 and y >= 0):
+                    arr[y][x] = '|'
                 eps += dx
                 if (eps << 1) <= -dy:
                     x -= 1
