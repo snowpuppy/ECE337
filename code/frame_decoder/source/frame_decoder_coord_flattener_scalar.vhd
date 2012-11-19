@@ -134,8 +134,8 @@ begin
   end process nextState;
 
     -- output logic
-    quotient_xz <= quoti1;
-    quotient_yz <= quoti1;
+    quotient_xz <= quoti_xz;
+    quotient_yz <= quoti_yz;
     done_c <= '1' when count = "10000" else '0';
     done <= done_c;
 
