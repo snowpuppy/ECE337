@@ -121,7 +121,7 @@ begin
     if (start = '1') then
         nextcount <= ( others => '0');
         nexttemp_xz <= ( others => '0');
-        nextdivide_xz <= placer_x
+        nextdivide_xz <= placer_x;
         nextquoti_xz <= ( others => '0');
         nextres_xz <= ( others => '0');
 
