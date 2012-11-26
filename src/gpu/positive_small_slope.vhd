@@ -9,6 +9,8 @@
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
+USE IEEE.std_logic_arith.all;
+USE IEEE.std_logic_unsigned.all;
 
 entity positive_small_slope is
     port (
@@ -26,7 +28,7 @@ entity positive_small_slope is
         pixel_done          : out    std_logic;
         line_done           : out    std_logic;
         x                   : out    std_logic_vector(15 downto 0);
-        y                   : out    std_logic_vector(15 downto 0);
+        y                   : out    std_logic_vector(15 downto 0)
     );
 end entity positive_small_slope;
 
@@ -43,9 +45,9 @@ begin
   reg: process (clk, rst)
   begin
     if rst = '1' then -- active reset
-      x_reg <= '0';
-      y_reg <= '0';
-      eps_reg <= '0';
+      x_reg <= (others =>'0');
+      y_reg <= (others =>'0');
+      eps_reg <= (others =>'0');
     elsif rising_edge(clk) then  -- check clock edge
       x_reg <= x_nxt;
       y_reg <= y_nxt;
@@ -57,15 +59,16 @@ begin
   begin
     x_plus_one <= x_reg + 1;
     y_plus_one <= y_reg + 1;
-  end if;
+  end process add;
 
-  add_eps: process(eps_reg, eps_plus_dy, dy, dx)
+  add_eps: process(eps_reg, eps_plus_dy, epsdy_min_dx, dy, dx)
   begin
     eps_plus_dy <= eps_reg + dy;
     epsdy_min_dx <= eps_plus_dy - dx;
-  end if;
+    epsdy_shift_left <= '0' & epsdy_min_dx(15 downto 1);
+  end process add_eps;
 
-  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, eps_min_dx, eps_plus_dy, dx)
+  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, epsdy_min_dx, eps_plus_dy, dx)
   begin
     -- Set default next values.
     x_nxt <= x_reg;
@@ -92,13 +95,13 @@ begin
     if load = '1' then
         x_nxt <= xi;
         y_nxt <= yi;
-        eps_nxt <= '0';
+        eps_nxt <= (others =>'0');
     end if;
   end process nextState;
 
-  output: process()
-  begin
-  end process output;
+  --output: process()
+  --begin
+  --end process output;
 
   line_done <= '1';
   pixel_done <= '1';
