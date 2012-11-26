@@ -16,7 +16,7 @@ entity positive_small_slope is
         rst                 : in    std_logic;
         strobe              : in    std_logic;
         load                : in    std_logic;
-        enable1             : in    std_logic;
+        enable              : in    std_logic;
         dx                  : in    std_logic_vector(15 downto 0);
         dy                  : in    std_logic_vector(15 downto 0);
         xi                  : in    std_logic_vector(15 downto 0);
@@ -31,9 +31,12 @@ entity positive_small_slope is
 end entity positive_small_slope;
 
 architecture positive_small_slope_arch of positive_small_slope is
-    signal x_reg, y_reg : std_logic_vector(15 downto 0)
-    signal x_nxt, y_nxt : std_logic_vector(15 downto 0)
-    signal eps_reg, eps_nxt: std_logic_vector(15 downto 0)
+    signal x_reg, y_reg : std_logic_vector(15 downto 0);
+    signal x_nxt, y_nxt : std_logic_vector(15 downto 0);
+    signal eps_reg, eps_nxt: std_logic_vector(15 downto 0);
+    signal x_plus_one, y_plus_one : std_logic_vector(15 downto 0);
+    signal eps_plus_dy, epsdy_min_dx : std_logic_vector(15 downto 0);
+    signal epsdy_shift_left : std_logic_vector(15 downto 0);
     signal enstrobe : std_logic;
 begin
   -- state register. Keeps track of the state.
@@ -50,17 +53,38 @@ begin
     end if;
   end process reg;
 
-  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi)
+  add: process(x_reg, y_reg)
+  begin
+    x_plus_one <= x_reg + 1;
+    y_plus_one <= y_reg + 1;
+  end if;
+
+  add_eps: process(eps_reg, eps_plus_dy, dy, dx)
+  begin
+    eps_plus_dy <= eps_reg + dy;
+    epsdy_min_dx <= eps_plus_dy - dx;
+  end if;
+
+  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, eps_min_dx, eps_plus_dy, dx)
   begin
     -- Set default next values.
     x_nxt <= x_reg;
     y_nxt <= y_reg;
+    eps_nxt <= eps_reg;
     
     if enstrobe = '1' then
+        -- handle x next value
         if x_reg <= xf then
             x_nxt <= x_reg + 1;
         else
             x_nxt <= x_reg;
+        end if;
+        -- handle error next value
+        if epsdy_shift_left >= dx then
+            eps_nxt <= epsdy_min_dx;
+            y_nxt <= y_reg + 1;
+        else
+            eps_nxt <= eps_plus_dy;
         end if;
     end if;
     
@@ -76,6 +100,10 @@ begin
   begin
   end process output;
 
+  line_done <= '1';
+  pixel_done <= '1';
+  x <= x_reg;
+  y <= y_reg;
   enstrobe <= enable and strobe;
 
 end architecture positive_small_slope_arch;
