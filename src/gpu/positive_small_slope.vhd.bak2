@@ -37,10 +37,9 @@ architecture positive_small_slope_arch of positive_small_slope is
     signal x_nxt, y_nxt : std_logic_vector(15 downto 0);
     signal eps_reg, eps_nxt: std_logic_vector(15 downto 0);
     signal x_plus_one, y_plus_one : std_logic_vector(15 downto 0);
-    signal eps_plus_dy_reg, eps_plus_dy_nxt, epsdy_min_dx : std_logic_vector(15 downto 0);
-    signal epsdy_shift_left : std_logic_vector(15 downto 0);
+    signal eps_plus_dy, epsdy_min_dx : std_logic_vector(15 downto 0);
+    signal diff_dx_dy_reg : std_logic_vector(15 downto 0);
     signal enstrobe : std_logic;
-    signal wait_load_reg : std_logic;
 begin
   -- state register. Keeps track of the state.
   reg: process (clk, rst)
@@ -49,14 +48,11 @@ begin
       x_reg <= (others =>'0');
       y_reg <= (others =>'0');
       eps_reg <= (others =>'0');
-      eps_plus_dy_reg <= (others =>'0');
-      wait_load_reg <= '0';
     elsif rising_edge(clk) then  -- check clock edge
       x_reg <= x_nxt;
       y_reg <= y_nxt;
       eps_reg <= eps_nxt;
-      wait_load_reg <= load or not wait_load_reg;
-      eps_plus_dy_reg <= eps_plus_dy_nxt;
+      diff_dx_dy_reg <= dy - dx;
     end if;
   end process reg;
 
@@ -66,24 +62,18 @@ begin
     y_plus_one <= y_reg + 1;
   end process add;
 
-  add_eps: process(eps_reg, dy, dx, eps_plus_dy_reg, wait_load_reg)
+  add_eps: process(eps_reg, dy, dx)
   begin
-    eps_plus_dy_nxt <= eps_plus_dy_reg;
-    if wait_load_reg = '0' then
-        eps_plus_dy_nxt <= eps_reg + dy;
-    end if;
-    if load = '1' then
-        eps_plus_dy_nxt <= dy;
-    end if;
+    eps_plus_dy <= eps_reg + dy;
   end process add_eps;
 
-  min_eps: process(eps_plus_dy_reg, dy, dx)
+  min_eps: process(eps_reg, diff_dx_dy_reg, eps_plus_dy, dy, dx)
   begin
-    epsdy_min_dx <= eps_plus_dy_reg - dx;
-    epsdy_shift_left <= eps_plus_dy_reg(14 downto 0) & '0';
+    epsdy_min_dx <= eps_reg + diff_dx_dy_reg;
+    epsdy_shift_left <= eps_plus_dy(14 downto 0) & '0';
   end process min_eps;
 
-  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, epsdy_min_dx, eps_plus_dy_reg, dx, wait_load_reg, epsdy_shift_left)
+  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, epsdy_min_dx, eps_plus_dy, dx, epsdy_shift_left )
   begin
     -- Set default next values.
     x_nxt <= x_reg;
@@ -91,22 +81,18 @@ begin
     eps_nxt <= eps_reg;
     
     if enstrobe = '1' then
-        if wait_load_reg = '0' then
-            -- handle x next value
-            if x_reg < xf then
-                x_nxt <= x_reg + 1;
-            else
-                x_nxt <= x_reg;
-            end if;
+        -- handle x next value
+        if x_reg < xf then
+            x_nxt <= x_reg + 1;
+        else
+            x_nxt <= x_reg;
         end if;
         -- handle error next value
-        if epsdy_shift_left >= dx and not eps_plus_dy_reg(15) = '1' then
+        if epsdy_shift_left >= dx and not eps_plus_dy(15) = '1' then
             eps_nxt <= epsdy_min_dx;
-            if wait_load_reg = '0' then
-                y_nxt <= y_reg + 1;
-            end if;
+            y_nxt <= y_reg + 1;
         else
-            eps_nxt <= eps_plus_dy_reg;
+            eps_nxt <= eps_plus_dy;
         end if;
     end if;
     

@@ -117,15 +117,54 @@ process
     wait for Period/2;
     rst <= '0';
 
+    -- test regular line.
+    strobe <= '0';
+    load <= '1';
+    enable <= '0';
+    dx <= x"0018";
+    dy <= x"0009";
+    xi <= x"0012";
+    xf <= x"002A";
+    yi <= x"0029";
+    yf <= x"0032";
+    wait for Period;
+
+    for i in 0 to 49 loop
+        strobe <= '1';
+        load <= '0';
+        enable <= '1';
+        wait for Period;
+    end loop;
+
+    -- test flat line zero slope
     strobe <= '0';
     load <= '1';
     enable <= '0';
     dx <= x"0008";
-    dy <= x"0006";
+    dy <= x"0000";
     xi <= x"0002";
     xf <= x"000A";
     yi <= x"0002";
-    yf <= x"0008";
+    yf <= x"0002";
+    wait for Period;
+
+    for i in 0 to 15 loop
+        strobe <= '1';
+        load <= '0';
+        enable <= '1';
+        wait for Period;
+    end loop;
+
+    -- test slope of one
+    strobe <= '0';
+    load <= '1';
+    enable <= '0';
+    dx <= x"0008";
+    dy <= x"0008";
+    xi <= x"0002";
+    xf <= x"000A";
+    yi <= x"0002";
+    yf <= x"000A";
     wait for Period;
 
     for i in 0 to 15 loop
