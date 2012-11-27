@@ -60,12 +60,14 @@ begin
     end if;
   end process reg;
 
+  -- addition for x and y
   add: process(x_reg, y_reg)
   begin
     x_plus_one <= x_reg + 1;
     y_plus_one <= y_reg + 1;
   end process add;
 
+  -- addition for eps
   add_eps: process(eps_reg, dy, dx, eps_plus_dy_reg, wait_load_reg)
   begin
     eps_plus_dy_nxt <= eps_plus_dy_reg;
@@ -77,6 +79,7 @@ begin
     end if;
   end process add_eps;
 
+  -- subtraction for eps
   min_eps: process(eps_plus_dy_reg, dy, dx)
   begin
     epsdy_min_dx <= eps_plus_dy_reg - dx;
@@ -123,7 +126,7 @@ begin
   --end process output;
 
   line_done <= '1' when x_reg = xf else '0';
-  pixel_done <= '1';
+  pixel_done <= not wait_load_reg;
   x <= x_reg;
   y <= y_reg;
   enstrobe <= enable and strobe;
