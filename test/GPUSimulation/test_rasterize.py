@@ -24,6 +24,8 @@ for i in square:
     #n = ry*ry*ry*rz*rz*p
     n = rz*rz*p
     n += pos
+    # I added twelve and twenty to position the object in the middle of the screen.
+    # I multiplied by twelve and twenty to scale the object so that it would be bigger.
     rotsquare.append( (12 + float(n[0])*12/float(n[2]),20 + float(n[1])*20/float(n[2]),float(n[2])) )
 
 print rotsquare

@@ -51,3 +51,5 @@ test_line(0,5,5,2)
 test_line(7,0,3,12)
 # slope < -1 points reversed
 test_line(3,12,7,0)
+
+test_line(2,2,10,8)

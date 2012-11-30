@@ -1,0 +1,111 @@
+-- $Id: $
+-- File name:   tb_initial_calc.vhd
+-- Created:     11/29/2012
+-- Author:      Thor Smith
+-- Lab Section: 337-02
+-- Version:     1.0  Initial Test Bench
+
+library ieee;
+--library gold_lib;   --UNCOMMENT if you're using a GOLD model
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+--use gold_lib.all;   --UNCOMMENT if you're using a GOLD model
+
+entity tb_initial_calc is
+generic (Period : Time := 4 ns);
+end tb_initial_calc;
+
+architecture TEST of tb_initial_calc is
+
+  function UINT_TO_STDV( X: INTEGER; NumBits: INTEGER )
+     return STD_LOGIC_VECTOR is
+  begin
+    return std_logic_vector(to_unsigned(X, NumBits));
+  end;
+
+  function STDV_TO_UINT( X: std_logic_vector)
+     return integer is
+  begin
+    return to_integer(unsigned(x));
+  end;
+
+  component initial_calc
+    PORT(
+         clk : in std_logic;
+         rst : in std_logic;
+         read_data : in std_logic;
+         x1 : in std_logic_vector(15 downto 0);
+         x2 : in std_logic_vector(15 downto 0);
+         y1 : in std_logic_vector(15 downto 0);
+         y2 : in std_logic_vector(15 downto 0);
+         calculations : out std_logic_vector(95 downto 0);
+         positive_slope : out std_logic;
+         small_slope : out std_logic
+    );
+  end component;
+
+-- Insert signals Declarations here
+  signal clk : std_logic;
+  signal rst : std_logic;
+  signal read_data : std_logic;
+  signal x1 : std_logic_vector(15 downto 0);
+  signal x2 : std_logic_vector(15 downto 0);
+  signal y1 : std_logic_vector(15 downto 0);
+  signal y2 : std_logic_vector(15 downto 0);
+  signal calculations : std_logic_vector(95 downto 0);
+  signal positive_slope : std_logic;
+  signal small_slope : std_logic;
+
+-- signal <name> : <type>;
+
+begin
+
+CLKGEN: process
+  variable clk_tmp: std_logic := '0';
+begin
+  clk_tmp := not clk_tmp;
+  clk <= clk_tmp;
+  wait for Period/2;
+end process;
+
+  DUT: initial_calc port map(
+                clk => clk,
+                rst => rst,
+                read_data => read_data,
+                x1 => x1,
+                x2 => x2,
+                y1 => y1,
+                y2 => y2,
+                calculations => calculations,
+                positive_slope => positive_slope,
+                small_slope => small_slope
+                );
+
+--   GOLD: <GOLD_NAME> port map(<put mappings here>);
+
+process
+
+  begin
+
+-- Insert TEST BENCH Code Here
+
+    rst <= '1';
+    read_data <= '0';
+    x1 <= x"0000";
+    x2 <= x"0000";
+    y1 <= x"0000";
+    y2 <= x"0000";
+    wait for Period/0.99;
+    rst <= '0';
+
+    -- slope > 1
+    x1 <= x"0012"; -- 18
+    x2 <= x"0022"; -- 34
+    y1 <= x"0008"; -- 8
+    y2 <= x"0030"; -- 48
+    read_data <= '1';
+    wait for Period;
+    wait for 2*Period;
+
+  end process;
+end TEST;
