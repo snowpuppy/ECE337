@@ -47,6 +47,9 @@ screen.append([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 
 screen.append([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
 screen.append([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
 
+HEIGHT = len(screen)
+WIDTH = len(screen[0])
+
 def clr_screen():
     for i in screen:
         for j in range(len(i)):
@@ -92,6 +95,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
             xf = x1 if x1 < x2 else x2
             smallslope = 0
         
+    print "dx =",dx, "dy =", dy,"xi =",x,"yi =",y,"xf =",xf,"yf =",yf
+
     ################################
     # DRAW POSITIVE SLOPES
     ################################
@@ -99,7 +104,7 @@ def draw_line(x1,y1,x2,y2,arr=screen):
         if smallslope:
             # draw each pixel for positive slopes from 0 to 1
             for x in range(x,xf+1):
-                if (x >= 0 and y >= 0):
+                if (x >= 0 and y >= 0 and x < WIDTH and y < HEIGHT):
                     arr[y][x] = '|'
                 eps += dy
                 if (eps << 1) >= dx:
@@ -108,7 +113,7 @@ def draw_line(x1,y1,x2,y2,arr=screen):
         else:
             # draw each pixel for positive slopes from 1 to inf
             for y in range(y,yf+1):
-                if (x >= 0 and y >= 0):
+                if (x >= 0 and y >= 0 and x < WIDTH and y < HEIGHT):
                     arr[y][x] = '|'
                 eps += dx
                 if (eps << 1) >= dy:
@@ -121,7 +126,7 @@ def draw_line(x1,y1,x2,y2,arr=screen):
     # draw each pixel for negative slopes from 0 to 1
         if smallslope:
             for x in range(x,xf+1):
-                if (x >= 0 and y >= 0):
+                if (x >= 0 and y >= 0 and x < WIDTH and y < HEIGHT):
                     arr[y][x] = '|'
                 eps += dy
                 if (eps << 1) <= -dx:
@@ -133,7 +138,7 @@ def draw_line(x1,y1,x2,y2,arr=screen):
             dy = -dy
             # draw each pixel for positive slopes from 1 to inf
             for y in range(y,yf+1):
-                if (x >= 0 and y >= 0):
+                if (x >= 0 and y >= 0 and x < WIDTH and y < HEIGHT):
                     arr[y][x] = '|'
                 eps += dx
                 if (eps << 1) <= -dy:

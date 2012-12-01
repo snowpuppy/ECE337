@@ -63,7 +63,8 @@ def orthographic_projection(list_tuples):
         x = i[0]
         y = i[1]
         print "X =", int(x), "Y =", int(y)
-        line_drawing.screen[int(y)][int(x)] = "*"
+        if (int(x) >= 0 and int(y) >= 0 and int(y) < line_drawing.HEIGHT and int(x) < line_drawing.WIDTH):
+            line_drawing.screen[int(y)][int(x)] = "*"
 
 def print_line(p1,p2):
     print "Line(%d,%d,%d,%d)" % (p1[0],p1[1],p2[0],p2[1])

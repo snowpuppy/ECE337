@@ -5,8 +5,9 @@ import rasterize_3d
 import numpy
 import math
 
+SIZE = 5
 
-square = [(-5,-5,-5), (-5,5,-5), (5,5,-5), (5,-5,-5), (5,-5,5), (5,5,5), (-5,5,5), (-5,-5,5)]
+square = [(-SIZE,-2*SIZE,-SIZE), (-SIZE,2*SIZE,-SIZE), (SIZE,2*SIZE,-SIZE), (SIZE,-2*SIZE,-SIZE), (SIZE,-2*SIZE,SIZE), (SIZE,2*SIZE,SIZE), (-SIZE,2*SIZE,SIZE), (-SIZE,-2*SIZE,SIZE)]
 rotsquare = []
 
 #rx = numpy.array( ( (1, 0, 0), (0, math.cos(math.pi/6), -math.sin(math.pi/6)), (0, math.sin(math.pi/6), math.cos(math.pi/6)) ) )
