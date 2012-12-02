@@ -12,6 +12,8 @@
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
+USE IEEE.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 entity line_draw_algorithm is
     port (
@@ -120,6 +122,7 @@ end component initial_calc;
     signal x1, y1, x2, y2 : std_logic_vector(15 downto 0);
     signal enable0, enable1, enable2, enable3 : std_logic;
     signal status0, status1, status2, status3, status4, status5, status6, status7 : std_logic;
+    signal negdy, negdx : std_logic_vector(15 downto 0);
 
 begin
 
@@ -147,16 +150,16 @@ pos_large_slope:positive_small_slope port map(
         strobe => strobe,
         load => load,
         enable => enable1,
-        dx => dx,
-        dy => dy,
-        xi => xi,
-        xf => xf,
-        yi => yi,
-        yf => yf,
+        dx => dy,
+        dy => dx,
+        xi => yi,
+        xf => yf,
+        yi => xi,
+        yf => xf,
         pixel_done => status2,
         line_done => status3,
-        x => xpl,
-        y => ypl
+        x => ypl,
+        y => xpl
     );
 neg_small_slope:negative_small_slope port map ( 
         clk => clk,
@@ -182,16 +185,16 @@ neg_large_slope:negative_small_slope port map (
         strobe => strobe,
         load => load,
         enable => enable3,
-        dx => dx,
-        dy => dy,
-        xi => xi,
-        xf => xf,
-        yi => yi,
-        yf => yf,
+        dx => dy,--negdy,
+        dy => dx,--negdx,
+        xi => yi,
+        xf => yf,
+        yi => xi,
+        yf => xf,
         pixel_done => status6,
         line_done => status7,
-        x => xnl,
-        y => ynl
+        x => ynl,
+        y => xnl
     );
 
 line_alg_cntr:line_alg_controller port map (
@@ -229,8 +232,18 @@ init_calc:initial_calc port map (
         small_slope => small_slope
      );
 
+    --complement:process(dx,dy)
+    --begin
+    --    negdx <= std_logic_vector( not(signed(dx)) + 1 );
+    --    negdy <= std_logic_vector( not(signed(dy)) + 1 );
+    --end process complement;
+
     status <= status7 & status6 & status5 & status4 & status3 & status2 & status1 & status0;
-    enable <= enable3 & enable2 & enable1 & enable0;
+
+    enable0 <= enable(0);
+    enable1 <= enable(1);
+    enable2 <= enable(2);
+    enable3 <= enable(3);
 
     x1 <= twopoints(63 downto 48);
     y1 <= twopoints(47 downto 32);

@@ -64,25 +64,27 @@ begin
         when BRANCH =>
             if (positive_slope = '1') then
                 if small_slope = '1' then
-                    nextstate <= POS;
+                    nextstate <= PSP;
                 else
-                    nextstate <= POL;
+                    nextstate <= PLP;
                 end if;
             else
                 if small_slope = '1' then
-                    nextstate <= NES;
+                    nextstate <= NSP;
                 else
-                    nextstate <= NEL;
+                    nextstate <= NLP;
                 end if;
             end if;
         -----------------------------
         -- positive slope small slope
         -----------------------------
         when POS =>
-            if pos_small_line_done = '1' then
-                nextstate <= IDLE;
-            elsif next_pixel = '1' then
-                nextstate <= PSP;
+            if next_pixel = '1' then
+                if pos_small_line_done = '1' then
+                    nextstate <= IDLE;
+                else
+                    nextstate <= PSP;
+                end if;
             end if;
         when PSP =>
             if pos_small_pixel_rdy = '1' then
@@ -94,10 +96,12 @@ begin
         -- positive slope large slope
         -----------------------------
         when POL =>
-            if pos_large_line_done = '1' then
-                nextstate <= IDLE;
-            elsif next_pixel = '1' then
-                nextstate <= PLP;
+            if next_pixel = '1' then
+                if pos_large_line_done = '1' then
+                    nextstate <= IDLE;
+                else
+                    nextstate <= PLP;
+                end if;
             end if;
         when PLP =>
             if pos_large_pixel_rdy = '1' then
@@ -109,10 +113,12 @@ begin
         -- negative slope small slope
         -----------------------------
         when NES =>
-            if neg_small_line_done = '1' then
-                nextstate <= IDLE;
-            elsif next_pixel = '1' then
-                nextstate <= NSP;
+            if next_pixel = '1' then
+                if neg_small_line_done = '1' then
+                    nextstate <= IDLE;
+                else
+                    nextstate <= NSP;
+                end if;
             end if;
         when NSP =>
             if neg_small_pixel_rdy = '1' then
@@ -124,10 +130,12 @@ begin
         -- negative slope large slope
         -----------------------------
         when NEL =>
-            if neg_large_line_done = '1' then
-                nextstate <= IDLE;
-            elsif next_pixel = '1' then
-                nextstate <= NLP;
+            if next_pixel = '1' then
+                if neg_large_line_done = '1' then
+                    nextstate <= IDLE;
+                else
+                    nextstate <= NLP;
+                end if;
             end if;
         when NLP =>
             if neg_large_pixel_rdy = '1' then
