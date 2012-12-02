@@ -39,6 +39,7 @@ architecture negative_small_slope_arch of negative_small_slope is
     signal x_plus_one, y_plus_one : std_logic_vector(15 downto 0);
     signal eps_plus_dy_reg, eps_plus_dy_nxt, epsdy_plus_dx : std_logic_vector(15 downto 0);
     signal epsdy_shift_left : std_logic_vector(15 downto 0);
+    signal eps_plus_dydx_reg, eps_plus_dydx_nxt  : std_logic_vector(15 downto 0);
     signal enstrobe : std_logic;
     signal wait_load_reg : std_logic;
 begin
@@ -50,6 +51,7 @@ begin
       y_reg <= (others =>'0');
       eps_reg <= (others =>'0');
       eps_plus_dy_reg <= (others =>'0');
+      eps_plus_dydx_reg <= (others =>'0');
       wait_load_reg <= '0';
     elsif rising_edge(clk) then  -- check clock edge
       x_reg <= x_nxt;
@@ -57,6 +59,7 @@ begin
       eps_reg <= eps_nxt;
       wait_load_reg <= load or not wait_load_reg;
       eps_plus_dy_reg <= eps_plus_dy_nxt;
+      eps_plus_dydx_reg <= eps_plus_dydx_nxt;
     end if;
   end process reg;
 
@@ -71,22 +74,25 @@ begin
   add_eps: process(eps_reg, dy, dx, eps_plus_dy_reg, wait_load_reg)
   begin
     eps_plus_dy_nxt <= eps_plus_dy_reg;
+    eps_plus_dydx_nxt <= eps_plus_dydx_reg;
     if wait_load_reg = '0' then
         eps_plus_dy_nxt <= eps_reg + dy;
+        eps_plus_dydx_nxt <= eps_reg + dy + dx;
     end if;
     if load = '1' then
         eps_plus_dy_nxt <= dy;
+        eps_plus_dydx_nxt <= eps_reg + dy + dx;
     end if;
   end process add_eps;
 
   -- subtraction for eps
   min_eps: process(eps_plus_dy_reg, dy, dx)
   begin
-    epsdy_plus_dx <= eps_plus_dy_reg + dx;
+    --epsdy_plus_dx <= eps_plus_dy_reg + dx;
     epsdy_shift_left <= eps_plus_dy_reg(14 downto 0) & '0';
   end process min_eps;
 
-  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, epsdy_plus_dx, eps_plus_dy_reg, dx, wait_load_reg, epsdy_shift_left)
+  nextState: process(x_reg, y_reg, eps_reg, enstrobe,load, xi, yi, eps_plus_dydx_nxt, eps_plus_dy_reg, dx, wait_load_reg, epsdy_shift_left)
   begin
     -- Set default next values.
     x_nxt <= x_reg;
@@ -104,7 +110,8 @@ begin
         end if;
         -- handle error next value
         if signed(epsdy_shift_left) <= -signed(dx) then
-            eps_nxt <= epsdy_plus_dx;
+            --eps_nxt <= epsdy_plus_dx;
+            eps_nxt <= eps_plus_dydx_nxt;
             if wait_load_reg = '0' then
                 y_nxt <= y_reg - 1;
             end if;
