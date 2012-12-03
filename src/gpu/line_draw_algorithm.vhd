@@ -185,8 +185,8 @@ neg_large_slope:negative_small_slope port map (
         strobe => strobe,
         load => load,
         enable => enable3,
-        dx => dy,--negdy,
-        dy => dx,--negdx,
+        dx => negdy,
+        dy => negdx,
         xi => yi,
         xf => yf,
         yi => xi,
@@ -232,11 +232,11 @@ init_calc:initial_calc port map (
         small_slope => small_slope
      );
 
-    --complement:process(dx,dy)
-    --begin
-    --    negdx <= std_logic_vector( not(signed(dx)) + 1 );
-    --    negdy <= std_logic_vector( not(signed(dy)) + 1 );
-    --end process complement;
+    complement:process(dx,dy)
+    begin
+        negdx <= std_logic_vector( not(signed(dx)) + 1 );
+        negdy <= std_logic_vector( not(signed(dy)) + 1 );
+    end process complement;
 
     status <= status7 & status6 & status5 & status4 & status3 & status2 & status1 & status0;
 
