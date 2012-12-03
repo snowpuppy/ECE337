@@ -9,7 +9,7 @@
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
-USE IEEE.std_logic_arith.all;
+USE IEEE.numeric_std.all;
 USE IEEE.std_logic_unsigned.all;
 
 entity frame_decoder_coord_flattener_scalar is
@@ -43,9 +43,9 @@ signal placer_z, placer_x, placer_y	 : std_logic_vector(15 downto 0);
 
 begin
 
-   placer_z <= std_logic_vector(unsigned(placer_z_in));
-   placer_y <= std_logic_vector(unsigned(placer_y_in));
-   placer_x <= std_logic_vector(unsigned(placer_x_in));
+   placer_z <= std_logic_vector(abs(signed(placer_z_in)));
+   placer_y <= std_logic_vector(abs(signed(placer_y_in)));
+   placer_x <= std_logic_vector(abs(signed(placer_x_in)));
 
   -- state register. Keeps track of the state.
   regist: process (clk, rst)
@@ -155,8 +155,8 @@ begin
   end process nextState;
 
     -- output logic
-    quotient_xz <= quoti_xz;
-    quotient_yz <= quoti_yz;
+    quotient_xz <= quoti_xz when placer_z_in(15) = placer_x_in(15) else std_logic_vector( -signed(quoti_xz));
+    quotient_yz <= quoti_yz when placer_z_in(15) = placer_y_in(15) else std_logic_vector( -signed(quoti_xz));
     error_z <= error_z_reg;
     done_c <= '1' when count = "10000" else '0';
     done <= done_c;
