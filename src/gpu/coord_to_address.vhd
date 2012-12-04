@@ -41,7 +41,7 @@ begin
     x_line_valid <= '1' when signed(x_line) >= x"0000" and signed(x_line) <= x"02D0" else '0';
     y_line_valid <= '1' when signed(y_line) >= x"0000" and signed(y_line) <= x"01E0" else '0';
 
-    x_line_valid <= (x_fill_valid and y_fill_valid) when mode = '1' else (x_line_valid and y_line_valid);
+    valid_address <= (x_fill_valid and y_fill_valid) when mode = '1' else (x_line_valid and y_line_valid);
 
     -- calculate address
     -- mode = 1 for fill and mode = 0 for line

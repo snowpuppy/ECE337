@@ -34,6 +34,7 @@ architecture TEST of tb_sequencer is
          clk : in std_logic;
          rst : in std_logic;
          start : in std_logic;
+         continue : in std_logic;
          line_drawn : in std_logic;
          num_vertices : in std_logic_vector(15 downto 0);
          connection : in std_logic_vector(15 downto 0);
@@ -46,6 +47,7 @@ architecture TEST of tb_sequencer is
   signal clk : std_logic;
   signal rst : std_logic;
   signal start : std_logic;
+  signal continue : std_logic;
   signal line_drawn : std_logic;
   signal num_vertices : std_logic_vector(15 downto 0);
   signal connection : std_logic_vector(15 downto 0);
@@ -68,6 +70,7 @@ end process;
                 clk => clk,
                 rst => rst,
                 start => start,
+                continue => continue,
                 line_drawn => line_drawn,
                 num_vertices => num_vertices,
                 connection => connection,
@@ -85,6 +88,7 @@ process
 
     rst <= '0';
     start <= '0';
+    continue <= '0';
     line_drawn <= '0';
     num_vertices <= (others => '0');
     connection <= (others => '0');

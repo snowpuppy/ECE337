@@ -99,7 +99,6 @@ end component coord_to_address;
     signal color : std_logic_vector(23 downto 0);
     signal vertices : std_logic_vector(767 downto 0);
     signal num_vertices : std_logic_vector(7 downto 0);
-    signal data_read : std_logic;
     signal valid : std_logic;
     signal done1 : std_logic;
     signal done2 : std_logic;
@@ -141,7 +140,7 @@ COMgpu_controller: gpu_controller port map (
         read_frame => read_frame,
         control => control,
         pixel_ready => data_ready, -- note that pixel ready really maps to data ready and vice versa. This was due to a poor naming choice.
-        data_read => data_read,
+        data_read => pixel_done,
         valid => valid,
         done1 => done1,
         done2 => done2,

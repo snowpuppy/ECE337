@@ -53,7 +53,7 @@ begin
     end if;
   end process reg;
 
-  nextState: process(control_in, color_in, vertices_in, num_vertices_in, read_frame)
+  nextState: process(control_reg, color_reg, vertices_reg, num_vertices_reg, control_in, color_in, vertices_in, num_vertices_in, read_frame)
   begin
     -- initialize the registers.
     control_nxt <= control_reg;

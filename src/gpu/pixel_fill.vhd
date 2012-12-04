@@ -45,7 +45,7 @@ begin
     end if;
   end process reg;
 
-  countxNext:process(countx_reg, xi, new_data, strobe_fill)
+  countxNext:process(countx_reg, xi, new_data, strobe_fill, y_pulse)
   begin
     countx_nxt <= countx_reg;
     if (new_data = '1') then
@@ -57,7 +57,7 @@ begin
     end if;
   end process countxNext;
 
-  countyNext:process(county_reg)
+  countyNext:process(county_reg, new_data, yi, y_pulse )
   begin
     county_nxt <= county_reg;
     if new_data = '1' then

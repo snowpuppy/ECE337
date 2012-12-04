@@ -18,6 +18,7 @@ entity sequencer is
         clk                 : in    std_logic;
         rst                 : in    std_logic;
         start               : in    std_logic;
+        continue            : in    std_logic;
         line_drawn          : in    std_logic;
         num_vertices        : in    std_logic_vector(7 downto 0);
         connection          : in    std_logic_vector(15 downto 0);
@@ -28,11 +29,11 @@ entity sequencer is
 end entity sequencer;
 
 architecture sequencer_arch of sequencer is
-    type stateType is (IDLE, FIND, DRAW, DONE);
+    type stateType is (IDLE, FIND, FINDDONE, DRAW, DONE);
     signal state, nextstate : stateType;
     signal count_reg, count_nxt : std_logic_vector(4 downto 0);
     signal count_enable : std_logic;
-    signal count_eq_num_vertices, match_found : std_logic;
+    signal match_found : std_logic;
     signal mask_reg, mask_nxt : std_logic_vector(15 downto 0);
     --signal addr_reg, addr_nxt : std_logic_vector(3 downto 0);
 begin
@@ -43,19 +44,21 @@ begin
         count_reg <= (others => '0');
         --addr_reg <= (others => '0');
         state <= IDLE;
+        mask_reg <= (others => '0');
     elsif rising_edge(clk) then  -- check clock edge
         count_reg <= count_nxt;
         --addr_reg <= addr_nxt;
         state <= nextstate;
+        mask_reg <= mask_nxt;
     end if;
   end process reg;
 
   -- Counting Process used for counting
   -- the number of vertices.
-  count: process(count_reg, count_enable)
+  count: process(count_reg, count_enable, start, continue)
   begin
     count_nxt <= count_reg;
-    if start = '1' then
+    if start = '1' or continue = '1' then
         count_nxt <= (others => '0');
     elsif count_enable = '1' then
         count_nxt <= count_reg + 1;
@@ -64,10 +67,10 @@ begin
 
   -- Shift mask process for comparing
   -- with the connection word.
-  shift: process(mask_reg, start, count_enable)
+  shift: process(mask_reg, start, continue, count_enable)
   begin
     mask_nxt <= mask_reg;
-    if start = '1' then
+    if start = '1' or continue = '1' then
         mask_nxt <= x"0001";
     elsif count_enable = '1' then
         mask_nxt <= mask_reg(14 downto 0) & '0';
@@ -82,13 +85,13 @@ begin
   --  end if;
   --end process addrNext;
 
-  nextStateLogic: process(state, count_reg, start, line_drawn, num_vertices, match_found )
+  nextStateLogic: process(state, count_reg, start, line_drawn, num_vertices, match_found, continue )
   begin
     -- Set default next values.
     nextstate <= state;
     case state is
         when IDLE =>
-            if start = '1' then
+            if start = '1' or continue = '1' then
                 nextstate <= FIND;
             end if;
         when FIND =>
@@ -96,10 +99,14 @@ begin
                 nextstate <= DONE;
             elsif match_found = '1' then
                 nextstate <= DRAW;
+            else
+                nextstate <= FINDDONE;
             end if;
+        when FINDDONE =>
+            nextstate <= FIND;
         when DRAW =>
             if line_drawn = '1' then
-                nextstate <= FIND;
+                nextstate <= FINDDONE;
             end if;
         when DONE =>
             nextstate <= IDLE;
@@ -118,6 +125,10 @@ begin
                 sequence_drawn <= '0';
                 count_enable <= '0';
             when FIND =>
+                next_line <= '0';
+                sequence_drawn <= '0';
+                count_enable <= '0';
+            when FINDDONE =>
                 next_line <= '0';
                 sequence_drawn <= '0';
                 count_enable <= '1';

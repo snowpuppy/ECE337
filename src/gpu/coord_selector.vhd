@@ -20,6 +20,7 @@ entity coord_selector is
         clk                 : in    std_logic;
         rst                 : in    std_logic;
         start               : in    std_logic;
+        continue            : in    std_logic;
         line_drawn          : in    std_logic;
         count               : in    std_logic_vector(3 downto 0);
         num_vertices        : in    std_logic_vector(7 downto 0);
@@ -36,6 +37,7 @@ architecture coord_selector_arch of coord_selector is
             clk                 : in    std_logic;
             rst                 : in    std_logic;
             start               : in    std_logic;
+            continue            : in    std_logic;
             line_drawn          : in    std_logic;
             num_vertices        : in    std_logic_vector(7 downto 0);
             connection          : in    std_logic_vector(15 downto 0);
@@ -54,6 +56,7 @@ begin
             clk => clk,
             rst => rst,
             start => start,
+            continue => continue,
             line_drawn => line_drawn,
             num_vertices => num_vertices,
             connection => connection,

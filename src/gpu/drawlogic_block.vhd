@@ -53,6 +53,7 @@ component gpu_timer is
         clk                 : in    std_logic;
         rst                 : in    std_logic;
         start               : in    std_logic;
+        continue            : out    std_logic;
         sequence_drawn      : in    std_logic;
         num_vertices        : in    std_logic_vector(7 downto 0);
         done1               : out   std_logic;
@@ -78,6 +79,7 @@ component coord_selector is
         clk                 : in    std_logic;
         rst                 : in    std_logic;
         start               : in    std_logic;
+        continue            : in    std_logic;
         line_drawn          : in    std_logic;
         count               : in    std_logic_vector(3 downto 0);
         num_vertices        : in    std_logic_vector(7 downto 0);
@@ -94,6 +96,7 @@ end component coord_selector;
     signal line_drawn : std_logic;
     signal next_line  : std_logic;
     signal two_points : std_logic_vector(63 downto 0);
+    signal continue : std_logic;
 begin
 
 drw_pixel_fill: pixel_fill port map (
@@ -114,6 +117,7 @@ drw_gpu_timer: gpu_timer port map (
         clk => clk,
         rst => rst,
         start => start,
+        continue => continue,
         sequence_drawn => sequence_drawn,
         num_vertices => num_vertices,
         done1 => done1,
@@ -135,6 +139,7 @@ drw_coord_selector:coord_selector port map (
         clk => clk,
         rst => rst,
         start => start,
+        continue => continue,
         line_drawn => line_drawn,
         count => count,
         num_vertices => num_vertices,

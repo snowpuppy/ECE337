@@ -20,6 +20,7 @@ entity gpu_timer is
         start               : in    std_logic;
         sequence_drawn      : in    std_logic;
         num_vertices        : in    std_logic_vector(7 downto 0);
+        continue            : out   std_logic;
         done1               : out   std_logic;
         count               : out   std_logic_vector(3 downto 0)
         );
@@ -27,27 +28,32 @@ end entity gpu_timer;
 
 architecture gpu_timer_arch of gpu_timer is
     signal count_reg, count_nxt : std_logic_vector(4 downto 0);
+    signal continue_nxt : std_logic;
 begin
 
   reg: process (clk, rst)
   begin
     if rst = '1' then -- active reset
         count_reg <= (others => '0');
+        continue <= '0';
     elsif rising_edge(clk) then  -- check clock edge
         count_reg <= count_nxt;
+        continue <= continue_nxt;
     end if;
   end process reg;
 
   -- Next count logic for timer.
-  nextCount : process(count_reg)
+  nextCount : process(count_reg, start, num_vertices, sequence_drawn)
   begin
     count_nxt <= count_reg;
+    continue_nxt <= '0';
     if start = '1' then
         count_nxt <= (others => '0');
     elsif count_reg = num_vertices(4 downto 0) then
         count_nxt <= (others => '0');
     elsif sequence_drawn = '1' then
         count_nxt <= count_reg + 1;
+        continue_nxt <= '1';
     end if;
   end process nextCount;
 
