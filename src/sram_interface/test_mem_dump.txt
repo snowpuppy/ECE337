@@ -1,4 +1,1 @@
-0:FFFF;
-1:FFFF;
-8:0005;
-9:0000;
+<addr>:<data value in hexidecimal>
