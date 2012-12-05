@@ -29,7 +29,7 @@ architecture ar_sel of sram_data_select is
 
     
 begin  -- ar_sel
-    rst_me: process (clk, rst_n)
+    rst_me: process (clk, rst_n,data)
     begin  -- process rst_me
       if rst_n = '1' then               -- asynchronous reset (active low)
         --           0        1         2         3

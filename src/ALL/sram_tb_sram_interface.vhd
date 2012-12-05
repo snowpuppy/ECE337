@@ -61,14 +61,14 @@ architecture TEST of sram_tb_sram_interface is
  component scalable_off_chip_sram is
     generic (
             -- Memory Model parameters
-            ADDR_SIZE_BITS  : natural  := 12;    -- Address bus size in bits/pins with addresses corresponding to 
-                                                -- the starting word of the accesss
-            WORD_SIZE_BYTES  : natural  := 1;      -- Word size of the memory in bytes
+            ADDR_SIZE_BITS  : natural  := 12;  
+                                               
+            WORD_SIZE_BYTES  : natural  := 1;     
             DATA_SIZE_WORDS  : natural  := 1;      -- Data bus size in "words"
-            READ_DELAY      : time    := 10 ns;  -- Delay/latency per read access (total time between start of supplying address and when the data read from memory appears on the r_data port)
-                                                -- Keep the 10 ns delay for on-chip SRAM
-            WRITE_DELAY      : time    := 10 ns    -- Delay/latency per write access (total time between start of supplying address and when the w_data value is written into memory)
-                                                -- Keep the 10 ns delay for on-chip SRAM
+            READ_DELAY      : time    := 10 ns; 
+                                                
+            WRITE_DELAY      : time    := 10 ns   
+                                               
           );
   port   (
           -- Test bench control signals
