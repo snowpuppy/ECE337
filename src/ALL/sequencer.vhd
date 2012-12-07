@@ -29,7 +29,7 @@ entity sequencer is
 end entity sequencer;
 
 architecture sequencer_arch of sequencer is
-    type stateType is (IDLE, FIND, FINDDONE, DRAW, DONE);
+    type stateType is (IDLE, FIND, FINDDONE, NLINE, DRAW, DONE);
     signal state, nextstate : stateType;
     signal count_reg, count_nxt : std_logic_vector(4 downto 0);
     signal count_enable : std_logic;
@@ -98,12 +98,14 @@ begin
             if count_reg = num_vertices(4 downto 0) then
                 nextstate <= DONE;
             elsif match_found = '1' then
-                nextstate <= DRAW;
+                nextstate <= NLINE;
             else
                 nextstate <= FINDDONE;
             end if;
         when FINDDONE =>
             nextstate <= FIND;
+        when NLINE =>
+            nextstate <= DRAW;
         when DRAW =>
             if line_drawn = '1' then
                 nextstate <= FINDDONE;
@@ -132,8 +134,12 @@ begin
                 next_line <= '0';
                 sequence_drawn <= '0';
                 count_enable <= '1';
-            when DRAW =>
+            when NLINE =>
                 next_line <= '1';
+                sequence_drawn <= '0';
+                count_enable <= '0';
+            when DRAW =>
+                next_line <= '0';
                 sequence_drawn <= '0';
                 count_enable <= '0';
             when DONE =>

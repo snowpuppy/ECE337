@@ -68,7 +68,10 @@ begin
                 nextstate <= PIXELFILL;
             end if;
         when DRLN =>
-            if pixel_ready = '1' then
+            -- go to idle if done drawing.
+            if done1 = '1' then
+                nextstate <= IDLE;
+            elsif pixel_ready = '1' then
                 nextstate <= CHKERRL;
             end if;
         when CHKERRL =>

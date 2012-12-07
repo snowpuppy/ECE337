@@ -32,7 +32,7 @@ end entity line_alg_controller;
 architecture line_alg_controller_arch of line_alg_controller is
     signal pos_small_pixel_rdy, pos_large_pixel_rdy, neg_small_pixel_rdy, neg_large_pixel_rdy : std_logic;
     signal pos_small_line_done, pos_large_line_done, neg_small_line_done, neg_large_line_done : std_logic;
-    type stateType is (IDLE,IDLE2,READ,READ2,BRANCH,NEL,NLP,NLW,NES,NSP,NSW,POL,PLP,PLW,POS,PSP,PSW);
+    type stateType is (RSTIDLE,LDRAWN,IDLE,IDLE2,READ,READ2,BRANCH,NEL,NLP,NLW,NES,NSP,NSW,POL,PLP,PLW,POS,PSP,PSW);
     signal state, nextstate : stateType;
 begin
 
@@ -40,7 +40,7 @@ begin
   reg: process (clk, rst)
   begin
     if rst = '1' then -- active reset
-      state <= IDLE;
+      state <= RSTIDLE;
     elsif rising_edge(clk) then  -- check clock edge
       state <= nextstate;
     end if;
@@ -51,6 +51,12 @@ begin
     -- Set default next values.
     nextstate <= state;
     case state is
+        when RSTIDLE =>
+            if (next_line = '1') then
+                nextstate <= IDLE2;
+            end if;
+        when LDRAWN =>
+            nextstate <= IDLE;
         when IDLE =>
             if (next_line = '1') then
                 nextstate <= IDLE2;
@@ -81,7 +87,7 @@ begin
         when POS =>
             if next_pixel = '1' then
                 if pos_small_line_done = '1' then
-                    nextstate <= IDLE;
+                    nextstate <= LDRAWN;
                 else
                     nextstate <= PSP;
                 end if;
@@ -98,7 +104,7 @@ begin
         when POL =>
             if next_pixel = '1' then
                 if pos_large_line_done = '1' then
-                    nextstate <= IDLE;
+                    nextstate <= LDRAWN;
                 else
                     nextstate <= PLP;
                 end if;
@@ -115,7 +121,7 @@ begin
         when NES =>
             if next_pixel = '1' then
                 if neg_small_line_done = '1' then
-                    nextstate <= IDLE;
+                    nextstate <= LDRAWN;
                 else
                     nextstate <= NSP;
                 end if;
@@ -132,7 +138,7 @@ begin
         when NEL =>
             if next_pixel = '1' then
                 if neg_large_line_done = '1' then
-                    nextstate <= IDLE;
+                    nextstate <= LDRAWN;
                 else
                     nextstate <= NLP;
                 end if;
@@ -157,8 +163,22 @@ begin
         read_data <= '0';
 
         case state is
-            when IDLE =>
+            when RSTIDLE =>
+                line_drawn <= '0';
+                pixel_ready <= '0';
+                load <= '0';
+                strobe <= '0';
+                enable <= "0000";
+                read_data <= '0';
+            when LDRAWN =>
                 line_drawn <= '1';
+                pixel_ready <= '0';
+                load <= '0';
+                strobe <= '0';
+                enable <= "0000";
+                read_data <= '0';
+            when IDLE =>
+                line_drawn <= '0';
                 pixel_ready <= '0';
                 load <= '0';
                 strobe <= '0';

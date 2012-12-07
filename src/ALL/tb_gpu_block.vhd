@@ -90,7 +90,7 @@ architecture TEST of tb_gpu_block is
     color_in <= UINT_TO_STDV(frame.red,8) & UINT_TO_STDV(frame.green,8) & UINT_TO_STDV(frame.blue,8);
     -- Assign the vertices appropriately.
     for i in 0 to 15 loop
-        vertices_in(767 -i*48 downto 768-48-i*48 )  <= frame.coordinates(15-i).connection & SINT_TO_STDV(frame.coordinates(i).x,16) & SINT_TO_STDV(frame.coordinates(15-i).y,16);
+        vertices_in(767 -i*48 downto 768-48-i*48 )  <= frame.coordinates(15-i).connection & SINT_TO_STDV(frame.coordinates(15-i).x,16) & SINT_TO_STDV(frame.coordinates(15-i).y,16);
         report integer'image(767 - i*48) & " downto " & integer'image(768-48-i*48);
         report integer'image(frame.coordinates(i).x) & "," & integer'image(frame.coordinates(i).y);
     end loop;

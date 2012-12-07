@@ -36,6 +36,15 @@ architecture TEST of tb_uart_to_hdmi_adapter is
     return to_integer(unsigned(x));
   end;
 
+  function to_string(sv: Std_Logic_Vector) return string is
+    use Std.TextIO.all;
+    variable bv: bit_vector(sv'range) := to_bitvector(sv);
+    variable lp: line;
+  begin
+    write(lp, bv);
+    return lp.all;
+  end;
+
   -- DATA TYPES ---
   type point is record
     x, y, z : integer;
@@ -116,7 +125,8 @@ procedure send_3d_frame(
         variable vertices_vector  : std_logic_vector(16*16*4-1 downto 0);
         variable data_vector  : std_logic_vector(16*16*4+9*16+24+2*8-1 downto 0);
         variable large_frame_size : integer := (16*16*4+9*16+24)/8 + 2;
-        variable frame_size   : integer := (16*16*3+9*16+24)/8 + 2;
+        variable frame_size   : integer := (16*16*4+9*16+24)/8 + 2;
+        variable k,l          : integer;
 begin
         -- construct data vector
         frame_size := (frame.num_verts*16*4 + 9*16 + 24)/8 + 2;
@@ -130,16 +140,20 @@ begin
         offset_vector := UINT_TO_STDV(frame.offset.x,16) & UINT_TO_STDV(frame.offset.y,16) & UINT_TO_STDV(frame.offset.z,16);
 
         for i in 0 to frame.num_verts-1 loop
-            vertices_vector((frame.num_verts*16*4-1-16*4*i) downto frame.num_verts*16*4-16*4-i*16*4) := frame.vertices(15-i).connection & UINT_TO_STDV(frame.vertices(15-i).x,16) & UINT_TO_STDV(frame.vertices(15-i).y,16) & UINT_TO_STDV(frame.vertices(15-i).z,16);
-            report "from " & integer'image(frame_size-1-16*4*i) & " to " & integer'image(frame_size-16*4-16*4*i);
+            k := (16*16*4-1-16*4*i);
+            l := 16*16*4-16*4-i*16*4;
+            vertices_vector( k downto l ) := frame.vertices(15-i).connection & UINT_TO_STDV(frame.vertices(15-i).x,16) & UINT_TO_STDV(frame.vertices(15-i).y,16) & UINT_TO_STDV(frame.vertices(15-i).z,16);
+            report "from " & integer'image(k) & " to " & integer'image(l);
+            report to_string(vertices_vector(k downto l));
         end loop;
 
         -- data format
         data_vector := frame_type & num_bytes & color_vector & sin_vector & cos_vector & offset_vector & vertices_vector;
 
         -- send out the data
+        k := 16*16*4+9*16+24+2*8-1;
         for i in 0 to frame_size-1 loop
-            send_bits(data_vector((frame_size*8-1-8*i) downto frame_size*8-8-i*8), '1', data_period, serial_in_signal);
+            send_bits(data_vector((k-1-8*i) downto k-8-i*8), '1', data_period, serial_in_signal);
         end loop;
 
 end procedure send_3d_frame;
@@ -482,16 +496,16 @@ process
     micro_data_in <= '0';
     data1_in <= (others => '0');
     data2_in <= (others => '0');
-    wait for Period/2;
+    wait for Period/2 + 1 ns;
     rst <= '0';
 
     -- test 2d frame.
-    frame2d.x := 5;
-    frame2d.y := 9;
+    frame2d.x := 120;
+    frame2d.y := 20;
     frame2d.w := 100;
-    frame2d.h := 200;
+    frame2d.h := 120;
     frame2d.color.red := 255;
-    frame2d.color.green := 0;
+    frame2d.color.green := 255;
     frame2d.color.blue := 255;
     send_2d_frame(frame2d, DATA_PERIOD,micro_data_in);
 
@@ -518,6 +532,8 @@ process
     frame3d.color.green := 0;
     frame3d.color.blue := 255;
     send_3d_frame(frame3d, DATA_PERIOD,micro_data_in);
+
+    wait for 8 us;
 
   end process;
 end TEST;
