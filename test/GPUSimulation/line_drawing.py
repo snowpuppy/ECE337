@@ -95,7 +95,8 @@ def draw_line(x1,y1,x2,y2,arr=screen):
             xf = x1 if x1 < x2 else x2
             smallslope = 0
         
-    print "dx =",dx, "dy =", dy,"xi =",x,"yi =",y,"xf =",xf,"yf =",yf
+    #print "dx =",dx, "dy =", dy,"xi =",x,"yi =",y,"xf =",xf,"yf =",yf
+    #print "slope positive =",positive_slope,"small slope =",smallslope
 
     ################################
     # DRAW POSITIVE SLOPES
@@ -138,6 +139,7 @@ def draw_line(x1,y1,x2,y2,arr=screen):
             dy = -dy
             # draw each pixel for positive slopes from 1 to inf
             for y in range(y,yf+1):
+                #print "x=",x,"y=",y
                 if (x >= 0 and y >= 0 and x < WIDTH and y < HEIGHT):
                     arr[y][x] = '|'
                 eps += dx

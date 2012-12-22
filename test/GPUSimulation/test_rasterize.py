@@ -21,13 +21,13 @@ rz = numpy.matrix( [ [cospi6, -sinpi6, 0], [sinpi6, cospi6, 0], [0, 0, 1] ] )
 for i in square:
     p = numpy.matrix([ [ i[0] ], [ i[1] ], [ i[2] ] ] )
     #pos = numpy.matrix( [ [10], [20], [20] ] )
-    pos = numpy.matrix( [ [0], [0], [16] ] )
+    pos = numpy.matrix( [ [0], [0], [20] ] )
     #n = ry*ry*ry*rz*rz*p
     n = rz*rz*p
     n += pos
     # I added twelve and twenty to position the object in the middle of the screen.
     # I multiplied by twelve and twenty to scale the object so that it would be bigger.
-    rotsquare.append( (12 + float(n[0])*12/float(n[2]),20 + float(n[1])*20/float(n[2]),float(n[2])) )
+    rotsquare.append( (12 + 12*float(n[0])/float(n[2]),20 + 20*float(n[1])/float(n[2]),float(n[2])) )
 
 print rotsquare
 
